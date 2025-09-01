@@ -1,12 +1,12 @@
 from pymongo import MongoClient
+from connection import get_database_connection
 
+# Get database connection
+client, db, students_col, courses_col = get_database_connection()
 
-uri = "mongodb+srv://bdaram:VA4IVH1UcL4HOrNM@dsscourserecommendation.bhrricb.mongodb.net/?retryWrites=true&w=majority&appName=DSSCourseRecommendation"
-client = MongoClient(uri)
-db = client["course_dss"]
-
-students_col = db["students"]
-courses_col = db["courses"]
+# Check if connection failed
+if not client:
+    raise Exception("Failed to connect to MongoDB. Please check your configuration.")
 
 # Clear old data
 students_col.delete_many({})

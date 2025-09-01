@@ -13,17 +13,25 @@ HOURS = list(range(9, 18))  # 9AM to 5PM
 
 
 # MongoDB connection
-uri = "mongodb+srv://bdaram:VA4IVH1UcL4HOrNM@dsscourserecommendation.bhrricb.mongodb.net/?retryWrites=true&w=majority&appName=DSSCourseRecommendation"
-client = MongoClient(uri)
-db = client["course_dss"]
-students_col = db["students"]
-courses_col = db["courses"]
+from connection import initialize_connection
+
+# Get database connection
+client, db, students_col, courses_col = initialize_connection()
+
+# Check if connection failed
+if not client:
+    st.error("❌ Database connection failed! Please check your configuration.")
+    st.stop()
+else:
+    st.success("✅ Connected to MongoDB Atlas successfully!")
 
 # === PAGE CONFIG ===
 st.set_page_config(page_title="Course Recommendation DSS", layout="wide")
 
-st.title("🎓 Course Recommendation Decision Support System")
-st.markdown("Welcome! This system helps students choose the best combination of courses for their semester based on interests, eligibility, credit range, and more.")
+from config import APP_TITLE, APP_DESCRIPTION
+
+st.title(f"🎓 {APP_TITLE}")
+st.markdown(APP_DESCRIPTION)
 
 # === SIDEBAR UI ===
 with st.sidebar:
@@ -49,8 +57,9 @@ with st.sidebar:
             st.warning("⚠️ Enter a valid Roll, Name, and Major to fetch completed courses.")
 
     with st.expander("📊 Credit Range", expanded=True):
-        credit_min = st.number_input("Minimum Credits", min_value=1, max_value=30, value=6)
-        credit_max = st.number_input("Maximum Credits", min_value=1, max_value=30, value=9)
+        from config import DEFAULT_CREDIT_MIN, DEFAULT_CREDIT_MAX
+        credit_min = st.number_input("Minimum Credits", min_value=1, max_value=30, value=DEFAULT_CREDIT_MIN)
+        credit_max = st.number_input("Maximum Credits", min_value=1, max_value=30, value=DEFAULT_CREDIT_MAX)
 
     with st.expander("🎯 Course Preferences", expanded=True):
         category = st.selectbox("Preferred Category", ["All", "Core", "Elective", "Lab", "Project"])

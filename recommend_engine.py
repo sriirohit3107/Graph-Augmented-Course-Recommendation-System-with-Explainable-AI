@@ -5,11 +5,14 @@ from sklearn.metrics.pairwise import cosine_similarity
 import itertools
 
 # MongoDB Connection (same as other files)
-uri = "mongodb+srv://bdaram:VA4IVH1UcL4HOrNM@dsscourserecommendation.bhrricb.mongodb.net/?retryWrites=true&w=majority&appName=DSSCourseRecommendation"
-client = MongoClient(uri)
-db = client["course_dss"]
-students_col = db["students"]
-courses_col = db["courses"]
+from connection import get_database_connection
+
+# Get database connection
+client, db, students_col, courses_col = get_database_connection()
+
+# Check if connection failed
+if not client:
+    raise Exception("Failed to connect to MongoDB. Please check your configuration.")
 
 def get_recommendations(roll, name, major, interests, completed, credit_min, credit_max, category_filter, difficulty_filter, must_take, avoid):
     # --- Fetch Courses ---
